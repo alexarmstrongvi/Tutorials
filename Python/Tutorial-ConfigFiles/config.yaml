@@ -1,0 +1,158 @@
+# YAML comments
+
+# Key-value syntax
+key: value
+key with spaces: value with spaces
+'quoted key' : 'quoted value'
+
+# Interpreted Types
+my_int      : 1
+my_float    : 1.1 
+my_bool     : true
+my_null     : null
+my_utf      : "\u263A" # UTF-8/16/32 characters need to be encoded
+my_array    : [1, val2, [3, 4.0]]
+my_map      : {key1: val1, key2 : {key3: val3}}
+my_datetime : 2000-12-31T23:59:59.999999Z
+my_date     : 2001-12-31
+
+# Alternative formats
+my_strings  : [string, "string", 'string', '1', 'true', 'null']
+my_booleans : [true, false, yes, no, True, TRUE]
+#my_floats   : [1.1, 1e-3, 1E-3] # Not working
+single quotes: 'have ''one'' escape pattern'
+double quotes: "have many: \", \0, \t, \u263A, \x0d\x0a == \r\n, and more."
+my_array2 :
+  - 1
+  - val2
+  -
+    - 3
+    - 4.0
+my_map2:
+  key1 : val
+  key2:
+    key3 : val3
+
+# Explicit typing
+my_set    : !!set {1,2,2}
+
+# Complex keys and values
+0.25: a float key
+literal_block: |
+    Multiline value. Leading indentation removed.
+    Line breaks preserved.
+
+    Blank lines preserved.
+        Indentation spaces preserved.
+folded_style: >
+    Multiline value. Leading indentation removed.
+    Line breaks become spaces.
+
+    Blank lines become newlines.
+      Indentation spaces preserved.
+      New lines preserved only for indented lines.
+
+? |
+  Multiline key. Leading indentation removed.
+  Line breaks preserved.
+
+  Blank lines preserved.
+    Indentation spaces preserved.
+: value 
+
+# # YAML also allows mapping between sequences with the complex key syntax
+# # Some language parsers might complain
+# # An example
+# ? - Manchester United
+#   - Real Madrid
+# : [2001-01-01, 2002-02-02]
+
+# # Sequences (equivalent to lists or arrays) look like this
+# # (note that the '-' counts as indentation):
+# a_sequence:
+#   - Item 1
+#   - Item 2
+#   - 0.5  # sequences can contain disparate types.
+#   - Item 4
+#   - key: value
+#     another_key: another_value
+#   -
+#     - This is a sequence
+#     - inside another sequence
+#   - - - Nested sequence indicators
+#       - can be collapsed
+
+# # Since YAML is a superset of JSON, you can also write JSON-style maps and
+# # sequences:
+# json_map: {"key": "value"}
+# json_seq: [3, 2, 1, "takeoff"]
+# and quotes are optional: {key: [3, 2, 1, takeoff]}
+
+# #######################
+# # EXTRA YAML FEATURES #
+# #######################
+
+# # YAML also has a handy feature called 'anchors', which let you easily duplicate
+# # content across your document. Both of these keys will have the same value:
+# anchored_content: &anchor_name This string will appear as the value of two keys.
+# other_anchor: *anchor_name
+
+# # Anchors can be used to duplicate/inherit properties
+# base: &base
+#   name: Everyone has same name
+
+# # The regexp << is called Merge Key Language-Independent Type. It is used to
+# # indicate that all the keys of one or more specified maps should be inserted
+# # into the current map.
+
+# foo:
+#   <<: *base
+#   age: 10
+
+# bar:
+#   <<: *base
+#   age: 20
+
+# # foo and bar would also have name: Everyone has same name
+
+# # YAML also has tags, which you can use to explicitly declare types.
+# explicit_string: !!str 0.5
+# # Some parsers implement language specific tags, like this one for Python's
+# # complex number type.
+# python_complex_number: !!python/complex 1+2j
+
+# # We can also use yaml complex keys with language specific tags
+# ? !!python/tuple [5, 7]
+# : Fifty Seven
+# # Would be {(5, 7): 'Fifty Seven'} in Python
+
+# ####################
+# # EXTRA YAML TYPES #
+# ####################
+
+# # Strings and numbers aren't the only scalars that YAML can understand.
+# # ISO-formatted date and datetime literals are also parsed.
+# datetime: 2001-12-15T02:59:43.1Z
+# datetime_with_spaces: 2001-12-14 21:59:43.10 -5
+# date: 2002-12-14
+
+# # The !!binary tag indicates that a string is actually a base64-encoded
+# # representation of a binary blob.
+# gif_file: !!binary |
+#   R0lGODlhDAAMAIQAAP//9/X17unp5WZmZgAAAOfn515eXvPz7Y6OjuDg4J+fn5
+#   OTk6enp56enmlpaWNjY6Ojo4SEhP/++f/++f/++f/++f/++f/++f/++f/++f/+
+#   +f/++f/++f/++f/++f/++SH+Dk1hZGUgd2l0aCBHSU1QACwAAAAADAAMAAAFLC
+#   AgjoEwnuNAFOhpEMTRiggcz4BNJHrv/zCFcLiwMWYNG84BwwEeECcgggoBADs=
+
+# # YAML also has a set type, which looks like this:
+# set:
+#   ? item1
+#   ? item2
+#   ? item3
+# or: {item1, item2, item3}
+
+# # Sets are just maps with null values; the above is equivalent to:
+# set2:
+#   item1: null
+#   item2: null
+#   item3: null
