@@ -1,12 +1,6 @@
 Built-in C++ Tutorial
 =======================
 
-# TODO
-* preprocessor directives
-* linking object files
-* creating and linking to a library
-* VSCode IDE
-
 # Running a C++ program
 1. **Write** - Follow a C++ standard (C++98, 03, 11, 14, 17, 20)
 1. **Build** - Choose a compiler compatible with your hardware/OS and that accepts your C++ standard 
@@ -24,6 +18,8 @@ Built-in C++ Tutorial
     * Output = object file (`.o`)
 1. Linker
     * Output = executable (`a.out`) or dynamic library (`.dylib`, `.so`)
+1. Other
+    * Bitstream (`.bc`) - clang specific binary file
 
 # Setup
 * Choosing a compiler
@@ -38,7 +34,7 @@ Built-in C++ Tutorial
         * Licensing
     * A comprehensive comparison of compilers is on (wikipedia)[`https://en.wikipedia.org/wiki/List_of_compilers#C++_compilers`]
 * Writing source code
-    * File extensions: .cc, .cpp, .C
+    * File extensions: .cc, .cpp, .cxx, .C
         * Generally doesn't matter unless you are dealing with picky IDEs or compilers
 
 # Statement Types
@@ -50,7 +46,26 @@ Built-in C++ Tutorial
 * Iteration statements (loops)
 * Try blocks
 
-# Other
+# Conventions
+* {}-initialization
+
+# Todo
+* STL algorithms
+* Functions, especially lambda functions
+* Structs and classes
+* Debugging (gdb and VSCode integrated debugger)
+* Building projects (make, CMake)
+* Logging
+* Executables and user cmd lind args
+* Style conventions and documentation
+* Other
+    * casting: static, dynamics, narrow
+    * Boost library
+    * templates and metaprogramming
+    * constexpr and compile-time programming
+    * I/O for data in CSV, JSON, XML, or binary (e.g. HDF) formatting
+    * Documentation generation
+
 
 ## Viewing non-text files
 * `od`, `hexdump`, `xxd`
