@@ -1,0 +1,21 @@
+{
+    "str": "A",
+    "int": 1,
+    "float": 1.1,
+    "True": true,
+    "False": false,
+    "None": null,
+    "Inf": -Infinity,
+    "NaN": NaN,
+    "dict": {
+        "Key": "Value"
+    },
+    "list": [
+        1,
+        2
+    ],
+    "tuple": [
+        3,
+        4
+    ]
+}
