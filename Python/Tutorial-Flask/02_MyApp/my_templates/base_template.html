@@ -1,0 +1,8 @@
+{% block myblock %}
+    <p>Text from myblock base</p>
+{% endblock %}
+{{self.myblock()}}
+{% block myblock2 %}
+    <p>Text from myblock2 base</p>
+    {% block myparagraph %}{% endblock %}
+{% endblock %}

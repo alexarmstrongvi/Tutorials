@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<!-- 
+    See: https://jinja.palletsprojects.com/en/3.0.x/templates/
+ -->
+<html>
+<head>
+    <title>Jinja Template</title>
+</head>
+<body>
+    <!------------------------------------------------------------------------->
+    <h3>Expressions</h3>
+    <!--
+    It is assumed the application building from this template (e.g. flask) will 
+    define all variable names referenced in expressions. If not, an undefined 
+    value is returned. 
+    -->
+    <pre>
+        Literals
+        True, False, None
+        string
+        1234
+        12.34, 1000001
+        12.34, 1.000001, 1230000.0
+        ['string', 1, 1.1, [1, 2, 3]]
+        ('string', 1, 1.1, (1, 2, 3))
+        {'key': 'val', 1: 2, 2: 1.1}
+
+        Math, Logic, and Comparison operators basically 
+        the same as python except for...
+        Tilde : Hello 1 World <!-- str + number gives TypeError -->
+        Pipe  : UPPERCASE
+
+        Variable Substitution
+        myvar           = val
+        mylist[1]       = 2
+        mydict['key1']  = 1
+        
+        Undefined variables
+        novar           = 
+        mylist[99]      = 
+        mydict['nokey'] = 
+    </pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>Variable assignment</h3>
+    
+    <p>newvar = new val</p>
+
+    
+    <p>ns.var = False</p>
+    
+    <!-- variables scope unless in namespace -->
+    
+        
+        
+        <p>(in loop) newvar = newer val; ns.var = True</p> 
+        
+    
+    <p>(after loop) newvar = new val; ns.var = True</p> 
+    
+    <!------------------------------------------------------------------------->
+    <h3>Comments</h3>
+    
+    
+    
+    <!------------------------------------------------------------------------->
+    <h3>Escaping</h3>
+    <pre>
+    {{
+    {{ not evaluated }}
+    </pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>If statements</h3>
+    <pre>
+        Start of if-statement
+        
+        > Else
+        
+        endif
+    </pre>
+
+    <h3>Controlling whitespace in statements</h3>
+    <pre>   
+        =======
+        
+        Keep Whitespace
+        
+        =======
+        Remove from end of line
+        
+        =======
+        Removed from end of previous line
+        
+        =======
+          
+        Remove from end of line
+        =======
+          
+        Removed from end of previous line
+        =======Remove all whitespace=======
+    </pre>
+
+    <h3>For-loops</h3>
+    Basic Loop
+    <pre>
+        for x in range(4)
+        * 0
+        * 1
+        * 2
+        * 3
+        
+    </pre>
+    
+    Mimicking continue
+    <pre>
+        for x in range(4) if x%2==0
+        * 0
+        * 2
+        
+    </pre>
+
+    For...else
+    <pre>
+        for x in range(4) if x < 0
+        * No looping
+        
+    </pre>
+
+    Special loop.variables
+    <pre>
+        for x in [3,4,5,5,6]:
+        <table>
+        <tr>
+            <th>x</th>
+            <th>index</th>
+            <th>index0</th>
+            <th>revindex</th>
+            <th>revindex0</th>
+            <th>first</th>
+            <th>last</th>
+            <th>length</th>
+            <th>previtem</th>
+            <th>nextitem</th>
+            <th>cycle('A','B')</th>
+            <th>depth</th>
+            <th>depth0</th>
+            <th>changed(x)</th>
+        </tr>
+        <tr>
+            <th> 3 </th>
+            <td>1</td>
+            <td>0</td>
+            <td>5</td>
+            <td>4</td>
+            <td>True</td>
+            <td>False</td>
+            <td>5</td>
+            <td></td>
+            <td>4</td>
+            <td>A</td>
+            <td>1</td>
+            <td>0</td>
+            <td>True</td>
+            </tr>
+        <tr>
+            <th> 4 </th>
+            <td>2</td>
+            <td>1</td>
+            <td>4</td>
+            <td>3</td>
+            <td>False</td>
+            <td>False</td>
+            <td>5</td>
+            <td>3</td>
+            <td>5</td>
+            <td>B</td>
+            <td>1</td>
+            <td>0</td>
+            <td>True</td>
+            </tr>
+        <tr>
+            <th> 5 </th>
+            <td>3</td>
+            <td>2</td>
+            <td>3</td>
+            <td>2</td>
+            <td>False</td>
+            <td>False</td>
+            <td>5</td>
+            <td>4</td>
+            <td>5</td>
+            <td>A</td>
+            <td>1</td>
+            <td>0</td>
+            <td>True</td>
+            </tr>
+        <tr>
+            <th> 5 </th>
+            <td>4</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+            <td>False</td>
+            <td>False</td>
+            <td>5</td>
+            <td>5</td>
+            <td>6</td>
+            <td>B</td>
+            <td>1</td>
+            <td>0</td>
+            <td>False</td>
+            </tr>
+        <tr>
+            <th> 6 </th>
+            <td>5</td>
+            <td>4</td>
+            <td>1</td>
+            <td>0</td>
+            <td>False</td>
+            <td>True</td>
+            <td>5</td>
+            <td>5</td>
+            <td></td>
+            <td>A</td>
+            <td>1</td>
+            <td>0</td>
+            <td>True</td>
+            </tr>
+        
+        </table>
+    </pre>
+
+    Recursive looping
+    <pre>
+        <ul><li>1 (depth = 1)</li><li>2 (depth = 1)</li><ul><li>9 (depth = 2)</li><li>8 (depth = 2)</li></ul><li>3 (depth = 1)</li><li>4 (depth = 1)</li>
+        </ul>
+    </pre>
+
+    Labeling loops for recursion
+    <pre>TODO</pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>Filters</h3>
+    Two ways to call filters
+    <pre>
+    ALL CAPS
+    ALL CAPS
+    </pre>
+    Filter examples
+    {
+    <pre>
+    batch          : [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    default        : Variable not defined
+    filesizeformat : 1.0 MB
+    </pre>
+    <!-- Straightforward
+    Numbers : float(), int(), abs(), round(), sum(), random()
+    Strings : 
+        string(), wordcount()
+        capitalize(), lower(), upper(), title()
+        center(), format(), indent(), pprint()
+        escape(), forceescape(), replace()
+        trim(), striptags()
+    Dict    : attr(), dictsort()
+    List    : 
+        list(), 
+        first(), last(), max(), min(), length(),
+        join(), sort(), reverse() 
+    -->
+    <!-- Unsorted
+    groupby()
+    map()
+    reject()
+    rejectattr()
+    safe()
+    select()
+    selectattr()
+    slice()
+    tojson()
+    truncate()
+    unique()
+    urlencode()
+    urlize()
+    wordwrap()
+    xmlattr()
+    -->
+    
+
+    <!------------------------------------------------------------------------->
+    <h3>Tests</h3>
+    <pre>
+    Type tests
+    True 
+    True True
+    True True True
+    True True True
+    True
+    True True True
+    True True
+    
+    Number tests
+    True True
+    True
+
+    String tests
+    True True
+    </pre>
+    <!-- Other
+    callable()
+    escaped()
+    sameas()
+    -->
+    <!------------------------------------------------------------------------->
+    <h3>Functions</h3>
+    <pre>
+    range       : [10, 8, 6, 4, 2]
+    lipsum      : Mi at lectus euismod risus.
+    dict        : {'key1': 'val', 'key2': 'val'}
+    cycler      : ['A', 'B', 'A']
+    next        :
+    reset       :
+    joiner      :
+    namespace   : 
+    </pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>Macros and calls</h3>
+    
+    <p><pre>
+        Calling mymacro(0,1,A,(),{})
+        .name          = mymacro
+        .arguments     = ('x', 'y', 'z')
+        .defaults      = 
+        .catch_kwargs  = True
+        .catch_varargs = True
+        </pre></p>
+    <p><pre>
+        Calling mymacro(0,1,2,(3, 4, 5),{})
+        .name          = mymacro
+        .arguments     = ('x', 'y', 'z')
+        .defaults      = 
+        .catch_kwargs  = True
+        .catch_varargs = True
+        </pre></p>
+    <p><pre>
+        Calling mymacro(0,2,1,(),{'kw': 5})
+        .name          = mymacro
+        .arguments     = ('x', 'y', 'z')
+        .defaults      = 
+        .catch_kwargs  = True
+        .catch_varargs = True
+        </pre></p>
+    
+    <!------------------------------------------------------------------------->
+    <h3>Includes and Imports</h3>
+    <pre>
+    </pre>
+    
+    <!------------------------------------------------------------------------->
+    <h3>Inheritance</h3>
+    <!--
+    - Inheritance overwrites content of block unles super() is called
+    - Blocks can be nested in other blocks (may get overwritten)
+    - Inheritance can be nested (i.e. grandchild extends child)
+    - Blocks can be set once during inheritance but can be duplicated in
+      parent using the self.blockname() expression or in the child
+      using the super() expression
+    -->
+    
+        <p>Text from myblock child </p>
+    
+
+        <p>Text from myblock child </p>
+    
+
+        
+    <p>Text from myblock2 base</p>
+    
+    <p>Child text</p>
+    
+
+        <p>Text from myblock2 child </p>
+        
+    <p>Text from myblock2 base</p>
+    
+    <p>Child text</p>
+    
+
+    

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<!-- 
+    See: https://jinja.palletsprojects.com/en/3.0.x/templates/
+ -->
+<html>
+<head>
+    <title>Jinja Template</title>
+</head>
+<body>
+    <!------------------------------------------------------------------------->
+    <h3>Expressions</h3>
+    <!--
+    It is assumed the application building from this template (e.g. flask) will 
+    define all variable names referenced in expressions. If not, an undefined 
+    value is returned. 
+    -->
+    <pre>
+        Literals
+        {{true}}, {{false}}, {{none}}
+        {{"string"}}
+        {{1234}}
+        {{12.34}}, {{1_000_001}}
+        {{12.34}}, {{1.000_001}}, {{123e4}}
+        {{["string",1,1.1,[1,2,3]]}}
+        {{("string",1,1.1,(1,2,3))}}
+        {{{'key':'val', 1:2, 2:1.1}}}
+
+        Math, Logic, and Comparison operators basically 
+        the same as python except for...
+        Tilde : {{"Hello " ~ 1 ~ " World"}} <!-- str + number gives TypeError -->
+        Pipe  : {{"uppercase"|upper}}
+
+        Variable Substitution
+        myvar           = {{myvar}}
+        mylist[1]       = {{ mylist[1] }}
+        mydict['key1']  = {{ mydict['key1'] }}
+        
+        Undefined variables
+        novar           = {{novar}}
+        mylist[99]      = {{ mylist[99] }}
+        mydict['nokey'] = {{ mydict['nokey'] }}
+    </pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>Variable assignment</h3>
+    {% set newvar = "new val" %}
+    <p>newvar = {{newvar}}</p>
+
+    {% set ns = namespace(var=false) %}
+    <p>ns.var = {{ns.var}}</p>
+    
+    <!-- variables scope unless in namespace -->
+    {% for _ in [1] %}
+        {% set newvar = "newer val" %}
+        {% set ns.var = true %}
+        <p>(in loop) newvar = {{newvar}}; ns.var = {{ns.var}}</p> 
+        
+    {% endfor %}
+    <p>(after loop) newvar = {{newvar}}; ns.var = {{ns.var}}</p> 
+    
+    <!------------------------------------------------------------------------->
+    <h3>Comments</h3>
+    {# Comment #}
+    {# 
+        Multi-line
+        Comment
+        {{ myvar }} gets evaluated if placed in html comments: <!-- --> 
+    #}
+    
+    <!------------------------------------------------------------------------->
+    <h3>Escaping</h3>
+    <pre>
+    {{ '{{' }}
+    {% raw -%}
+    {{ not evaluated }}
+    {% endraw -%}
+    </pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>If statements</h3>
+    <pre>
+        Start of if-statement
+        {% if false %}}
+        > Passed If
+        {% elif false %}
+        > Passed Elif 
+        {% else %}
+        > Else
+        {% endif %}
+        endif
+    </pre>
+
+    <h3>Controlling whitespace in statements</h3>
+    <pre>   
+        =======
+        {% if true %}
+        Keep Whitespace
+        {% endif %}
+        =======
+        {% if true -%}
+        Remove from end of line
+        {% endif %}
+        =======
+        {%- if true %}
+        Removed from end of previous line
+        {% endif %}
+        =======
+        {% if true %}  
+        Remove from end of line
+        {% endif -%}
+        =======
+        {% if true %}  
+        Removed from end of previous line
+        {%- endif %}
+        =======
+        {%- if true -%}  
+        Remove all whitespace 
+        {%- endif -%}
+        =======
+    </pre>
+
+    <h3>For-loops</h3>
+    Basic Loop
+    <pre>
+        for x in range(4)
+        {% for x in range(4) -%}
+        * {{x}}
+        {% endfor %}
+    </pre>
+    
+    Mimicking continue
+    <pre>
+        for x in range(4) if x%2==0
+        {% for x in range(4) if x%2==0 -%}
+        * {{x}}
+        {% endfor %}
+    </pre>
+
+    For...else
+    <pre>
+        for x in range(4) if x < 0
+        {% for x in range(4) if x < 0 -%}
+        * {{x}}
+        {% else -%}
+        * No looping
+        {% endfor %}
+    </pre>
+
+    Special loop.variables
+    <pre>
+        for x in [3,4,5,5,6]:
+        <table>
+        <tr>
+            <th>x</th>
+            <th>index</th>
+            <th>index0</th>
+            <th>revindex</th>
+            <th>revindex0</th>
+            <th>first</th>
+            <th>last</th>
+            <th>length</th>
+            <th>previtem</th>
+            <th>nextitem</th>
+            <th>cycle('A','B')</th>
+            <th>depth</th>
+            <th>depth0</th>
+            <th>changed(x)</th>
+        </tr>
+        {% for x in [3,4,5,5,6] -%}
+            <tr>
+            <th> {{x}} </th>
+            <td>{{loop.index}}</td>
+            <td>{{loop.index0}}</td>
+            <td>{{loop.revindex}}</td>
+            <td>{{loop.revindex0}}</td>
+            <td>{{loop.first}}</td>
+            <td>{{loop.last}}</td>
+            <td>{{loop.length}}</td>
+            <td>{{loop.previtem}}</td>
+            <td>{{loop.nextitem}}</td>
+            <td>{{loop.cycle("A","B")}}</td>
+            <td>{{loop.depth}}</td>
+            <td>{{loop.depth0}}</td>
+            <td>{{loop.changed(x)}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </pre>
+
+    Recursive looping
+    <pre>
+        <ul>
+        {%- for x in mylist recursive -%}
+            {%- if x is iterable -%}
+            <ul>{{loop(x)}}</ul>
+            {%- else -%}
+            <li>{{x}} (depth = {{loop.depth}})</li>
+            {%- endif -%}
+        {%- endfor %}
+        </ul>
+    </pre>
+
+    Labeling loops for recursion
+    <pre>TODO</pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>Filters</h3>
+    Two ways to call filters
+    <pre>
+    {{"all caps"|upper}}
+    {% filter upper %}all caps{% endfilter %}
+    </pre>
+    Filter examples
+    {
+    <pre>
+    batch          : {{[1,2,3,4,5,6,7,8,9] | batch(3) | list}}
+    default        : {{var_not_defined | default("Variable not defined")}}
+    filesizeformat : {{1_000_000|filesizeformat}}
+    </pre>
+    <!-- Straightforward
+    Numbers : float(), int(), abs(), round(), sum(), random()
+    Strings : 
+        string(), wordcount()
+        capitalize(), lower(), upper(), title()
+        center(), format(), indent(), pprint()
+        escape(), forceescape(), replace()
+        trim(), striptags()
+    Dict    : attr(), dictsort()
+    List    : 
+        list(), 
+        first(), last(), max(), min(), length(),
+        join(), sort(), reverse() 
+    -->
+    <!-- Unsorted
+    groupby()
+    map()
+    reject()
+    rejectattr()
+    safe()
+    select()
+    selectattr()
+    slice()
+    tojson()
+    truncate()
+    unique()
+    urlencode()
+    urlize()
+    wordwrap()
+    xmlattr()
+    -->
+    
+
+    <!------------------------------------------------------------------------->
+    <h3>Tests</h3>
+    <pre>
+    Type tests
+    {{ myvar is defined}} 
+    {{ None is none }} {{undef_var is undefined}}
+    {{ true is boolean }} {{ (2==2) is true }} {{ (1!=1) is false }}
+    {{ 1.1 is float }} {{1 is integer}} {{1e4 is number}}
+    {{ 'string' is string }}
+    {{ range(10) is iterable }} {{[1,2,3] is sequence }} {{{'key':1} is mapping}}
+    {{ 'upper' is filter }} {{'test' is test}}
+    
+    Number tests
+    {{ 4 is even }} {{ 3 is odd }}
+    {{ 6 is divisibleby 3 }}
+
+    String tests
+    {{ 'all lowercase' is lower }} {{'ALL CAPPS' is upper}}
+    </pre>
+    <!-- Other
+    callable()
+    escaped()
+    sameas()
+    -->
+    <!------------------------------------------------------------------------->
+    <h3>Functions</h3>
+    <pre>
+    range       : {{range(10,0,-2) | list}}
+    lipsum      : {{lipsum(1, html=False, min=5, max=6)}}
+    dict        : {{dict(key1='val', key2='val')}}
+    {% set c = cycler("A","B")-%}
+    cycler      : {{[c.next(), c.next(), c.next()]}}
+    next        :
+    reset       :
+    joiner      :
+    namespace   : 
+    </pre>
+
+    <!------------------------------------------------------------------------->
+    <h3>Macros and calls</h3>
+    {% macro mymacro(x, y=1, z='A') -%}
+        <pre>
+        Calling mymacro({{x}},{{y}},{{z}},{{varargs}},{{kwargs}})
+        .name          = {{mymacro.name}}
+        .arguments     = {{mymacro.arguments}}
+        .defaults      = {{mymacro.defaults}}
+        .catch_kwargs  = {{mymacro.catch_kwargs}}
+        .catch_varargs = {{mymacro.catch_varargs}}
+        </pre>
+
+    {%- endmacro %}
+    <p>{{ mymacro(0) }}</p>
+    <p>{{ mymacro(0,1,2,3,4,5) }}</p>
+    <p>{{ mymacro(0, z=1, y=2, kw=5) }}</p>
+    
+    <!------------------------------------------------------------------------->
+    <h3>Includes and Imports</h3>
+    <pre>
+    </pre>
+    
+    <!------------------------------------------------------------------------->
+    <h3>Inheritance</h3>
+    <!--
+    - Inheritance overwrites content of block unles super() is called
+    - Blocks can be nested in other blocks (may get overwritten)
+    - Inheritance can be nested (i.e. grandchild extends child)
+    - Blocks can be set once during inheritance but can be duplicated in
+      parent using the self.blockname() expression or in the child
+      using the super() expression
+    -->
+    {% extends "base_template.html" %}
+    {% block myblock %}
+        <p>Text from myblock child </p>
+    {% endblock %}
+
+    {% block myparagraph %}
+    <p>Child text</p>
+    {% endblock %}
+    {% block myblock2 %}
+        {{ super() }}
+        <p>Text from myblock2 child </p>
+        {{ super() }}
+    {% endblock %}
+</body>
+</html>

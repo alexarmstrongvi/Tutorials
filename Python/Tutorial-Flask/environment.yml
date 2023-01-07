@@ -1,0 +1,7 @@
+name: flask
+dependencies:
+  - python
+  - flask
+  - matplotlib
+  - plotly
+  - pandas # required by plotly

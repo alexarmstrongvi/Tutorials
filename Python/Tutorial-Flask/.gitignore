@@ -1,0 +1,7 @@
+*.pyc
+__pycache__/
+.vscode
+
+# References
+Flask-Plotly/
+flask-tutorial/
