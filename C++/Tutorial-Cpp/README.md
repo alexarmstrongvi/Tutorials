@@ -1,4 +1,4 @@
-Built-in C++ Tutorial
+C++ Built-in and Standard Library Tutorial
 =======================
 
 # Running a C++ program

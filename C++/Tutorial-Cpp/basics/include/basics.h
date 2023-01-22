@@ -3,6 +3,7 @@
 #include <iostream>
 #include <limits>
 #include <iomanip>
+#include <cmath>
 
 template <class T>
 void type_summary(const char* name) {

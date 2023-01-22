@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ################################################################################
 # Clean up build files from previous compilation
 if [ -d build ]; then rm -r build; fi 
@@ -27,6 +28,7 @@ clang++ $ops "$file"
 
 if [ $? -eq 0 ]; then
     printf "====== RUNNING ======\n"
+    chmod +x ./build/a.out
     ./build/a.out #2>&1 | tee build/run.log
     printf "\n====== DONE ======\n"
 else

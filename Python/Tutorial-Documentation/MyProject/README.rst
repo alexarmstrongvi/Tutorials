@@ -18,9 +18,11 @@ Setup
 PyDoc
 ---------------------------
 
-`pydoc <https://docs.python.org/3/library/pydoc.html>`_ is mostly identical to calling ``help()`` from within a python interactive session.
-However, there are two main differences.
-The first is a small benefit, namely that ``pydoc`` can be called from the command line and therefore doesn't require importing packages first.
+`pydoc <https://docs.python.org/3/library/pydoc.html>`_ is mostly identical to
+calling ``help()`` from within a python interactive session. However, there are
+two main differences. The first is a small benefit, namely that ``pydoc`` can be
+called from the command line and therefore doesn't require importing packages
+first.
 
 .. code-block:: bash
 
@@ -33,7 +35,8 @@ Running
 
     $ pydoc -b
 
-will start an HTTP server on an arbitrary unused port and open a Web browser to interactively browse the documentation.
+will start an HTTP server on an arbitrary unused port and open a Web browser to
+interactively browse the documentation.
 
 To generate an HTML file for a single module, run
 
@@ -41,7 +44,9 @@ To generate an HTML file for a single module, run
 
     $ pydoc -w mypackage/myclass.py
 
-PyDoc is useful for quick surveys of documentation and for generating informal documentation of a single module. For larger and more public projects, Sphinx is recommended.
+PyDoc is useful for quick surveys of documentation and for generating informal
+documentation of a single module. For larger and more public projects, Sphinx is
+recommended.
 
 Sphinx
 ---------------------------

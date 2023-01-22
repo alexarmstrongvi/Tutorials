@@ -82,7 +82,7 @@ int main() {
     int arr1[n]; // {?, ?, ?, ?, ?}
     // Partial initialization
     int arr2[n] = {1}; // {1, ?, ?, ?, ?}
-    int arr3[n] = {1,3,5}; // {1, 2, 3, ?, ?}
+    int arr3[n] = {1,3,5}; // {1, 3, 5, ?, ?}
     assert(arr2[n-1] == 0 and arr3[n-1] == 0); // Is this always true?
     // Full initialization
     int arr4[n] = {1,3,5,7,9};

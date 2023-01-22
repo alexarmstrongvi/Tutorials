@@ -1,0 +1,1 @@
+Hello ifstream from input file
