@@ -7,7 +7,7 @@
 # * Cleaning and Augmenting
 # * Operations
 # * Time-series (TODO)
-# * Multi-index / advanced indexing (TODO) 
+# * Multi-index / advanced indexing (TODO)
 ################################################################################
 # see https://pandas.pydata.org/docs/user_guide/index.html
 
@@ -25,7 +25,6 @@ print("Creating Series")
 data = [0,1,2,3]
 idx_names = ['A','B','C','D']
 s = pd.Series(data, index=idx_names)
-
 
 print("========================================")
 print("Creating DataFrames")
@@ -75,24 +74,24 @@ print()
 # Create from dict of dict
 data3 = {
     'C0' : {
-        'R0' : 'R0C0', 
-        'R1' : 'R1C0', 
-        'R2' : 'R2C0', 
+        'R0' : 'R0C0',
+        'R1' : 'R1C0',
+        'R2' : 'R2C0',
         'R3' : 'R3C0'},
     'C1' : {
-        'R0' : 'R0C1', 
-        'R1' : 'R1C1', 
-        'R2' : 'R2C1', 
+        'R0' : 'R0C1',
+        'R1' : 'R1C1',
+        'R2' : 'R2C1',
         'R3' : 'R3C1'},
     'C2' : {
-        'R0' : 'R0C2', 
-        'R1' : 'R1C2', 
-        'R2' : 'R2C2', 
+        'R0' : 'R0C2',
+        'R1' : 'R1C2',
+        'R2' : 'R2C2',
         'R3' : 'R3C2'},
     'C3' : {
-        'R0' : 'R0C3', 
-        'R1' : 'R1C3', 
-        'R2' : 'R2C3', 
+        'R0' : 'R0C3',
+        'R1' : 'R1C3',
+        'R2' : 'R2C3',
         'R3' : 'R3C3'},
 }
 
@@ -240,12 +239,12 @@ print()
 for i, row in enumerate(df.index):
     for j, col in enumerate(df.columns):
         # .at[] and .iat() only works for accessing single entry but is ~2x faster than loc and iloc
-        assert (data[i][j] 
-                == df.iloc[i,j] 
+        assert (data[i][j]
+                == df.iloc[i,j]
                 == df.iat[i,j]
                 == df[col][row] # Note that []-indexing is flipped
-                == df.loc[row][col] 
-                == df.at[row,col] 
+                == df.loc[row][col]
+                == df.at[row,col]
                 )
 
 for i in range(1, n_rows+1):
@@ -358,7 +357,7 @@ print("========================================")
 print("Cleaning")
 print("Rearranging columns")
 new_col_order = ['C3','C0','C1','C2']
-df1 = df[new_col_order] 
+df1 = df[new_col_order]
 df2 = df.loc[:,new_col_order]
 pd_test.assert_frame_equal(df1, df2)
 print(df1)
