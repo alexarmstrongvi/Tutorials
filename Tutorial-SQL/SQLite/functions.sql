@@ -1,0 +1,2 @@
+-- https://www.sqlite.org/lang_corefunc.html
+-- https://www.sqlite.org/lang_aggfunc.html

@@ -1,0 +1,32 @@
+# Load iPython-SQL extension to enable running SQL in Jupyter notebook
+%load_ext sql
+
+# Load database
+%sql sqlite:///my_database.db
+
+# Run SQL command
+%%sql
+SELECT * FROM my_table
+
+# Run as bash command
+!sqlite3 cmd """\
+SELECT * FROM my_table\
+WHERE my_col == my_val;\
+"""
+
+# Save SQL output into python object using IPython's underscore global
+<run sql cmd in previous cell>
+
+result_from_previous_cell = _
+type(result_from_previous_cell) == sql.run.ResultSet
+
+# Convert Pandas DataFrame in SQL table
+my_df = pd.DataFrame(...)
+
+%sql DROP TABLE IF EXISTS my_df
+%sql PERSIST my_df
+%sql SELECT * FROM my_df
+
+
+## OTHER NEW STUFF
+PRAGMA table_info(my_table)

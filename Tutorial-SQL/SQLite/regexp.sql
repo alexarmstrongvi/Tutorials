@@ -1,0 +1,1 @@
+-- LIKE, MATCH, GLOB, REGEXP
