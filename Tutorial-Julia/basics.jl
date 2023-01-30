@@ -23,6 +23,14 @@ my_pair        = "a" => 1
 my_unit_range  = 1:4
 my_step_range  = 1:1:4
 
+# Composite types
+struct MyStruct
+    x
+    y::Int32
+    z::Float32
+end
+my_struct = MyStruct("A", 2, 2.1)
+
 # Boolean Operators
 # ==, ===
 @assert 1.0 == 1 === 1 !== 1.0 != 1.1
@@ -82,8 +90,6 @@ my_bigflt = big(10.1^19)
 
 @assert(typemax(Int) + 1 == typemin(Int))
 
-println("DONE 😄")
-
 # eps(), nextfloat(), prevfloat()
 # zero(), one()
 
@@ -105,7 +111,7 @@ println("DONE 😄")
 @assert( Inf * 9 === Inf  )
 @assert( Inf / 9 === Inf  )
 @assert( 9 - Inf === -Inf )
-@assert( 9 / Inf === 0    )
+@assert( 9 / Inf === 0.0  )
 @assert( isnan(0/0)       )
 @assert( isnan(Inf - Inf) )
 @assert( isnan(Inf / Inf) )
@@ -154,7 +160,6 @@ try missing || false; catch TypeError; end
 
 # Dot operators
 @assert( [1,2,3] .+ 2 == [3,4,5])
-@assert( )
 
 # Numerica literal coefficients
 x = 3
@@ -225,14 +230,14 @@ funcI(a,b,c...) = "func($a, $b, $c)"
 @assert funcI(1,2,3,4,5) === "func(1, 2, (3, 4, 5))"
 
 funcJ(a,b,c) = "func($a, $b, $c)"
-@assert funcJ(1,(2,3)...) === funcJ((2,3)...,1) === "func(1, 2, 3)"
+@assert funcJ(1,(2,3)...) === funcJ((1,2)...,3) === "func(1, 2, 3)"
 
 # defaults, keyword, varargs, and kwargs
 funcK(a, b=2, args...; c, d=4, kwargs...) = "func($a, $b, $args, $c, $d, $kwargs)"
 @assert funcK(8, c=9) === "func(8, 2, (), 9, 4, Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}}())"
 @assert funcK(6,7,c=8,d=9) === "func(6, 7, (), 8, 9, Base.Pairs{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}}())"
-@assert funcK(6,7,c=8,d=9) === funcK(6,d=8,7,c=9)
-@assert funcK(1,2,3,4,a=5,b=6,c=7,d=8,z=9) === "func(1, 2, (3, 4), 7, 8, Base.Pairs(:a => 5, :b => 6, :z => 9)"
+@assert funcK(6,7,c=8,d=9) === funcK(6,d=9,7,c=8)
+@assert funcK(1,2,3,4,a=5,b=6,c=7,d=8,z=9) === "func(1, 2, (3, 4), 7, 8, Base.Pairs(:a => 5, :b => 6, :z => 9))"
 
 a,b,c = (7,8,9)
 funcL(a=1, b=c, c=b) = "func($a, $b, $c)"
@@ -256,3 +261,5 @@ funcN(-2, -3, -4) === 3.0
 
 #######################################
 # Comprehensions
+
+println("DONE 😄")
