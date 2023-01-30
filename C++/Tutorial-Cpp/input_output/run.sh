@@ -10,7 +10,7 @@ clang++ \
 if [ $? -eq 0 ]; then
     printf "====== RUNNING ======\n"
     ./a.out
-    printf "\nINFO :: Remove outputs: rm a.out test_output_file*txt\n"
+    printf "\nINFO :: Remove outputs: `rm a.out test_output_file*txt\n`"
     printf "\n====== DONE ======\n"
 else
     printf "\n====== FAILED ======\n"
