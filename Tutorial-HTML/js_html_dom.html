@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>JS-HTML DOM Tutorial</title>
+    <meta name='author' content="Alex Armstrong">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset='UTF-8'>
+    <style>
+    </style>
+</head>
+<body>
+<!-----------------------------------------------------------------------------
+NOTES:
+- DOM = Document Object Model
+    - Definition: W3C standard interface for programs accessing an HTML document
+    - Practically: The global JS object representing the web page that can be read 
+      from and written to within the environment processing JS code, allowing a
+      webpage to be dynamically updated 
+------------------------------------------------------------------------------>
+<h1>JS-HTML DOM Tutorial</h1>
+<p>Static body text</p>
+<a href="dummy link"> Dummy link </a>
+
+<!-----------------------------------------------------------------------------
+The `document` global
+------------------------------------------------------------------------------>
+<p id="document_demo">JS text output will go here</p>
+
+<!-- JavaScript -->
+<script>
+let result = []
+//console.dir(document) // Dumps a lot!
+result.push("<h1>Example <code>document</code> properties</h1>")
+result.push("Strings and numbers")
+result.push("<pre>")
+result.push(".title                = '" + document.title + "'")
+result.push(".characterSet         = '" + document.characterSet + "'")
+result.push(".childElementCount    = "  + document.childElementCount)
+result.push(".lastModified         = '" + document.lastModified + "'")
+result.push(".readyState           = '" + document.readyState + "'")
+result.push(".contentType          = '" + document.contentType + "'")
+result.push(".domain               = '" + document.domain + "'")
+result.push(".URL                  = '" + document.URL + "'")
+result.push("</pre>")
+
+// Child Elements
+result.push("Elements")
+result.push("<pre>")
+result.push("activeElement     &rarr; " + document.activeElement.nodeName)
+result.push("firstElementChild &rarr; " + document.firstElementChild.nodeName)
+result.push("documentElement   &rarr; " + document.documentElement.nodeName)
+result.push("head              &rarr; " + document.head.nodeName)
+result.push("body              &rarr; " + document.body.nodeName)
+result.push("lastElementChild  &rarr; " + document.lastElementChild.nodeName)
+result.push("</pre>")
+
+// HTMLCollections and NodeLists (array-like lists)
+result.push("HTMLCollections and NodeLists")
+result.push("<pre>")
+result.push("# of .children = " + document.children.length)
+result.push("# of .scripts  = " + document.scripts.length)
+result.push("# of .links    = " + document.links.length)
+result.push("# of .images   = " + document.images.length)
+result.push("</pre>")
+
+// Child Objects
+result.push("Objects")
+result.push("<pre>")
+result.push(".doctype returns " + document.doctype)
+result.push(".fonts   returns " + document.fonts)
+result.push("</pre>")
+
+// Full list of properties at 
+// https://developer.mozilla.org/en-US/docs/Web/API/Document
+document.getElementById("document_demo").innerHTML = result.join('<br>')
+</script>
+
+
+<!-----------------------------------------------------------------------------
+Nodes (e.g. Element, Comment, Style, Template, etc..)
+------------------------------------------------------------------------------>
+<h1>Nodes</h1>
+<!-- Setup -->
+<p id='myid'>Text with ID</p>
+<p name='myname'>Text with name</p>
+<p name='myname'>Text with name 2</p>
+<p class='myclass'>Text with class</p>
+<p class='myclass'>Text with class 2</p>
+
+<div>view node previous sibling</div>
+<div id='view_node' class='class1' part='part1'>
+    <p> Child 1 </p>
+    <p> Child 2 </p>
+</div>
+<div>view node next sibling</div>
+
+<p id="nodes_demo">JS text output will go here</p>
+
+<!-- JavaScript -->
+<script>
+result = []
+///////////////////////////////////////
+// Getting nodes
+const ele_id     = document.getElementById("myid");
+const eles_name  = document.getElementsByName("myname");
+const eles_tag   = document.getElementsByTagName("h1");
+const eles_class = document.getElementsByClassName("myclass");
+const eles_css   = document.querySelectorAll("p.myclass");
+result.push("<h2>Getting Elements</h2>")
+result.push("<pre>")
+result.push("ID element     -> '" + ele_id.innerHTML + "'")
+result.push("Name elements  -> '" + eles_name[1].innerHTML + "'")
+result.push("Class elements -> '" + eles_class[0].innerHTML + "'")
+result.push("Tag elements   -> '" + eles_tag[1].innerHTML + "'")
+result.push("CSS elements   -> '" + eles_css[1].innerHTML + "'")
+result.push("</pre>") 
+
+// The following HTML Nodes/Collections can be retrieved directly:
+// .body .documentElement .title .head 
+// .anchors  .images .links .scripts .forms .embeds
+
+///////////////////////////////////////
+// Viewing nodes
+const ele = document.getElementById('view_node')
+result.push("<h2>Viewing an Node</h2>")
+
+result.push("Strings and numbers")
+result.push("<pre>")
+result.push(".nodeName        -> '" + ele.nodeName + "'")
+result.push(".nodeType        -> '" + ele.nodeType + "'")
+result.push(".nodeValue       -> '" + ele.nodeValue + "'")
+result.push(".isConnected     -> '" + ele.isConnected + "'")
+//result.push(".textContent     -> '" + ele.textContent + "'")
+result.push(".baseURI         -> '" + ele.baseURI + "'")
+result.push("</pre>")
+
+result.push("Nodes")
+result.push("<pre>")
+result.push(".firstChild      -> '" + ele.firstChild + "'")
+result.push(".lastChild       -> '" + ele.lastChild + "'")
+result.push(".nextSibling     -> '" + ele.nextSibling + "'")
+result.push(".ownerDocument   -> '" + ele.ownerDocument + "'")
+result.push(".parentNode      -> '" + ele.parentNode + "'")
+result.push(".parentElement   -> '" + ele.parentElement + "'")
+result.push(".previousSibling -> '" + ele.previousSibling + "'")
+result.push("</pre>")
+
+result.push("Node List")
+result.push("<pre>")
+result.push(".childNodes      -> '" + ele.childNodes + "'")
+result.push("</pre>")
+
+///////////////////////////////////////
+// Viewing elements
+result.push("<h2>Viewing an Element (inherits from Node)</h2>")
+result.push("strings and numbers")
+result.push("<pre>")
+result.push(".tagName                -> '" + ele.tagName + "'")
+result.push(".localName              -> '" + ele.localName + "'")
+result.push(".id                     -> '" + ele.id + "'")
+//result.push(".classList              -> '" + ele.classList + "'")
+result.push(".className              -> '" + ele.className + "'")
+result.push(".part                   -> '" + ele.part + "'")
+//result.push(".innerHTML              -> '" + ele.innerHTML + "'")
+//result.push(".outerHTML              -> '" + ele.outerHTML + "'")
+result.push(".childElementCount      -> '" + ele.childElementCount + "'")
+result.push(".namespaceURI           -> '" + ele.namespaceURI + "'")
+result.push(".prefix                 -> '" + ele.prefix + "'")
+result.push(".clientHeight           -> '" + ele.clientHeight + "'")
+result.push(".clientLeft             -> '" + ele.clientLeft + "'")
+result.push(".clientTop              -> '" + ele.clientTop + "'")
+result.push(".clientWidth            -> '" + ele.clientWidth + "'")
+result.push(".scrollHeight           -> '" + ele.scrollHeight + "'")
+result.push(".scrollLeft             -> '" + ele.scrollLeft + "'")
+result.push(".scrollLeftMax          -> '" + ele.scrollLeftMax + "'")
+result.push(".scrollTop              -> '" + ele.scrollTop + "'")
+result.push(".scrollTopMax           -> '" + ele.scrollTopMax + "'")
+result.push(".scrollWidth            -> '" + ele.scrollWidth + "'")
+result.push("</pre>")
+
+// Elements
+result.push("Elements")
+result.push("<pre>")
+result.push(".firstElementChild      -> '" + ele.firstElementChild + "'")
+result.push(".lastElementChild       -> '" + ele.lastElementChild + "'")
+result.push(".nextElementSibling     -> '" + ele.nextElementSibling + "'")
+result.push(".previousElementSibling -> '" + ele.previousElementSibling + "'")
+result.push(".style                  -> '" + ele.style + "'")
+result.push("</pre>")
+
+// Collections
+result.push("HTML Collections")
+result.push("<pre>")
+result.push(".children               -> '" + ele.children + "'")
+
+result.push("</pre>")
+
+// Objects
+result.push("Objects")
+result.push("<pre>")
+result.push(".attributes             -> '" + ele.attributes + "'")
+
+result.push("</pre>") 
+// nodeName, nodeValue, and nodeType
+
+///////////////////////////////////////
+// Modifying nodes
+// 1) Set the values directly using the handles shown above
+ele_id.innerHTML = "Text updated by JS"
+// 2) element.setAttribute(attribute, value) for attributes
+eles_class[0].setAttribute("class", "")
+eles_name[0].setAttribute("new_attr", "new_val")
+
+///////////////////////////////////////
+// Creating and removing nodes
+const para = document.createElement("p")
+const node = document.createTextNode("JS created this element")
+para.appendChild(node)
+document.body.appendChild(para)
+// element.insertBefore(new, child)
+// document.removeChild(element)
+// document.replaceChild(new, old)
+
+document.getElementById("nodes_demo").innerHTML = result.join('<br>')
+</script>
+
+<!-----------------------------------------------------------------------------
+Events: Triggering code execution
+------------------------------------------------------------------------------>
+<h1>Events</h1>
+<!-- onclick, onmousedown, and onmouseup -->
+<p>Events defined inline</p>
+<button 
+    type="button"
+    onmouseover ="this.innerHTML = 'Over button'"
+    onmouseout  ="this.innerHTML = 'Outside button'"
+    onmousedown ="this.innerHTML = 'Pressing down'"
+    onmouseup   ="this.style.color = 'red'"
+    onclick     ="this.innerHTML = 'Clicked'"
+    >
+    Click me
+</button>
+<!-- onload and onunload -->
+
+<!-- onfocus -->
+
+<!-- EventListeners (Event Bubbling vs Event Capturing) -->
+<!-- element.addEventListener(event, function, useCapture) -->
+<br><br><br>
+<p>Event listeners added</p>
+<button type="button" id="mybutton">Click me</button>
+<script>
+    b = document.getElementById("mybutton")
+    b.addEventListener("mouseover", function(){this.innerHTML = "Over button"})
+    b.addEventListener("mouseout",  function(){this.innerHTML = "Outside button"})
+    b.addEventListener("mousedown", function(){this.innerHTML = "Pressing down"})
+    b.addEventListener("mouseup",   function(){this.style.color = "red"})
+    b.addEventListener("click",     function(){this.innerHTML = "Clicked"})
+</script>
+<pre>
+<!-- End Space -->
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>

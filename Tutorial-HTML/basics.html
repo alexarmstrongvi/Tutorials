@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>Title for tabs and SEO</title>
+    <meta name="author" content="Alex Armstrong">
+    <meta name="description" content="Simple examples of HTML">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <style>
+        body {font-family:sans-serif;}
+        #myid {text-decoration:underline}
+        .myclass1 {color:red;}
+        .myclass2 {color:orange; border:2px dotted blue;}
+    </style>
+</head>
+
+<body>
+<!--
+Notes
+    - Official documentation: https://html.spec.whatwg.org/
+    - HTML Developers: Web Hypertext Application Technology Working Group (WHATWG)
+    - Element
+        - Tags
+        - Attributes
+        - Text
+        - Semantic vs non-semantic
+    - Layout
+        - CSS
+        - Responsive Web Design
+    - Encoding and Character Sets
+        - HTML encoding: ASCII, ANSI, UTF-8
+        - URL encoding (ASCII)
+    - URL
+        - scheme://prefix.domain:port/path/filename
+    - HTML vs XHTML
+-->
+
+<!---------------------------------------------------------------------------->
+<h1 id="top">Headings</h1>
+<!---------------------------------------------------------------------------->
+
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading 6</h6>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1>Paragraphs</h1>
+<!---------------------------------------------------------------------------->
+<p>Paragraph text</p>
+<p>  Extra   spaces    ignored,
+    as are multiple lines, <br> unless a break element is used
+</p>
+<pre>
+Preformatted text that preserves   extra   spaces
+and line breaks but is in fixed-width font.
+</pre>
+<p> 
+Block quote:
+    <blockquote cite="https://en.wikipedia.org/wiki/HTML">
+    The HyperText Markup Language, or HTML is the standard markup language for 
+    documents designed to be displayed in a web browser.
+    </blockquote>
+<br>
+Inline quote: <q>[HTML] can be assisted by technologies such as Cascading Style Sheets (CSS)</q>
+<br>
+Abbreviations: <abbr title="Cascading Style Sheets">CSS</abbr>
+
+</p>
+<hr>
+<!---------------------------------------------------------------------------->
+<h1>Text Formatting</h1>
+<!---------------------------------------------------------------------------->
+<p> 
+    <b>Bold</b> or
+    <strong>strong</strong>,
+    <i>italics</i> or
+    <em>emphasized</em>,
+    <mark>marked</mark>,
+    <del>deleted</del>,
+    <ins>inserted</ins>,
+    X<sub>subscript</sub>,
+    X<sup>superscript</sup>
+</p>
+
+<h2>Entities and Symbols:</h2>
+<p>
+    Characters (entity name): &lt;, &sum;, &rarr;
+    <br>
+    Characters (entity number): &#60;, &#8721;, &#8594;
+    <br>
+    Diacritical Marks: a&#771
+    <br>
+    Emojis: &#128516;, &#270
+
+</p>
+<h2>Math Expressions and Computer Code:</h2>
+<p>Keyboard Input: <kbd>&#8984 + R</kbd></p>
+<p> Code
+    <pre><code>
+    x = 1;
+    y = 2;
+    print(x + y)
+    </code></pre>
+    Sample output: <samp> 3 </samp>
+</p>
+<p>Variables: <var>x</var> + <var>y</var> = 3</p>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1>Style</h1>
+<!--
+    Notes
+    - Syntax: <tagname style="css_property:value;">
+------------------------------------------------------------------------------>
+<p> Font Colors:
+    <span style="color:red;">    Red</span>
+    <span style="color:rgb(0, 255, 34);"> Green</span>
+    <span style="color:rgba(255, 251, 0, 0.300);">   Translucent Yellow</span>
+</p>
+<p> Background Colors:
+    <span style="background-color:rgba(255, 251, 0, 0.301);">   Yellow</span>
+    <span style="background-color:rgb(124, 124, 124);"> Grey</span>
+</p>
+<p> Border Colors:
+    <span style="border:solid blue;">   Blue</span>
+    <span style="border:1px dotted violet;"> Violet</span>
+</p>
+<p> Font family:
+    <span style="font-family:Times New Roman">   Times New Roman;</span>
+    <span style="font-family:cursive">   Cursive</span>
+</p>
+<p> Font size
+    <span style=font-size:100%>100%,</span>
+    <span style=font-size:150%>150%,</span>
+    <span style=font-size:x-small>x-small</span>
+</p>
+<p style="text-align:center">Centered Text</p>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Links and References </h1>
+<!---------------------------------------------------------------------------->
+<p>Hover over <span title="tip">this</span> for tooltip</p>
+<p>Link: <a href="https://en.wikipedia.org/wiki/HTML">HTML - Wikipedia</a></p>
+<p>Image: <img src="HTML_Logo.png" width="200" height="200" alt='HTML5 Logo'></p>
+<p>Failed Image: <img src="DoesntExist.png" alt='Alternative message'></p>
+<p>Bookmark: <a href="#top">Top of page</a></p>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Tables </h1>
+<!---------------------------------------------------------------------------->
+<table border="1">
+    <caption>Table 1: Caption</caption>
+    <tr>
+        <th rowspan="2"></th>
+        <th colspan="2">Super Header A</th>
+        <th colspan="2">Super Header B</th>
+    </tr>
+    <tr>
+        <th>Header 1</th>
+        <th>Header 2</th>
+        <th>Header 3</th>
+        <th>Header 4</th>
+    </tr>
+    <tr>
+        <th>Row 1</th>
+        <td>R1C1</td>
+        <td>R1C2</td>
+        <td colspan="2" rowspan="2" style='text-align:center'>R1:2C3:4</td>
+    </tr>
+    <tr>
+        <th>Row 2</th>
+        <td>R2C1</td>
+        <td>R2C2</td>
+    </tr>
+</table>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Lists </h1>
+<!---------------------------------------------------------------------------->
+Unordered List
+<ul>
+    <li>This</li>
+    <li>That</li>
+</ul>
+Ordered List
+<ol>
+    <li>A</li>
+    <li>B</li>
+</ol>
+Description List
+<dl>
+    <dt>Term 1</dt><dd>description 1</dd>
+    <dt>Term 2</dt><dd>description 2</dd>
+</dl>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Block and Inline </h1>
+<!---------------------------------------------------------------------------->
+<pre>&lt;div&gt;</pre>
+<p>
+    Text
+    Text 
+    <p style="color:red">Paragraph</p>
+    Text
+    Text
+    <div style="color:red">div</div>
+    Text
+    Text
+    <br style="color:red">br<br>
+    Text
+    Text
+</p>
+<hr>
+<!---------------------------------------------------------------------------->
+<h1 id="myid"> Classes and ID </h1>
+<!---------------------------------------------------------------------------->
+<div class="myclass2 myclass1">
+    Writing in my own class block element
+</div>
+<p> Inserting my own <span class="myclass1">class</span> inline</p>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Iframe </h1>
+<!---------------------------------------------------------------------------->
+<iframe 
+    src="https://en.wikipedia.org/wiki/HTML" 
+    name='myframe'
+    frameborder="0"
+    width=1000
+    height=300
+    >
+</iframe>
+<p>
+    <a href="https://en.wikipedia.org/wiki/HTML5" target="myframe"> 
+    Load HTML5 Wiki </a> into Iframe</p>
+    <a href="https://en.wikipedia.org/wiki/HTML" target="myframe"> 
+        Load HTML Wiki </a> into Iframe</p>
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Forms </h1>
+<!--
+    - input type="X"
+        - text, email, password, search, tel, url, number
+        - date, datetime-local, month, week, time
+        - button, submit, reset, 
+        - checkbox, radio
+        - file, image
+        - color
+        - range
+        - hidden
+    - label
+    - select
+    - textarea
+    - button
+    - fieldset and legend
+    - datalist
+    - output
+    - option
+    - optgroup
+-->
+<!---------------------------------------------------------------------------->
+<form>
+    <label for="text field">Text Fields:</label><br>
+    <input type="text" id="text field" name="text field" value="default"><br>
+    <br>
+    
+    Text area: <br>
+    <textarea name="textarea" id="textarea" cols="30" rows="4">
+        Type here...
+    </textarea>
+    <br>
+    
+    Datalist: <br>
+    <input list="datalist">
+    <datalist id="datalist">
+        <option value="A">
+        <option value="AA">
+        <option value="B">
+        <option value="BA">
+    </datalist>
+    <br>
+
+    Range:
+    0<input type="range" id="range" name="range" value=20>100
+
+    <br><br>
+
+    <fieldset>
+        <legend>Buttons and Boxes in a Fieldset</legend>
+        
+        Radio Button: <br>
+        <input type="radio" id="radio" name="radio" value="filled">
+        <label for="radio">Button text</label><br>
+        <br>
+        
+        Checkbox: <br>
+        <input type="checkbox" id="checkbox" name="checkbox" value="filled">
+        <label for="checkbox">Checkbox text</label><br>
+        <br>
+        
+        Select from drop-down: <br>
+        <select name="select" id="select">
+            <option value="A">A</option>
+            <option value="B" selected>B</option>
+        </select>
+        <br>
+        
+        Button: <br>
+        <button type="button" onclick="alert('Alert Message')">Button Text</button>
+        <br>
+        
+        Submit button (does nothing): <br>
+        <input type="submit" value="Button text">
+        <br>
+    </fieldset>
+</form>
+<br>
+<p>Output</p>
+<form oninput="x.value=parseInt(a.value)*parseInt(b.value)">
+    A = <input type="number" id="a", name="a", value=>
+    <br>
+    B = <input type="number" id="b", name="b", value=10>
+    <br>
+    A x B = <output name="x" for="a b"></output>
+    <br>
+</form>
+<!---------------------------------------------------------------------------->
+<h1> Template </h1>
+<!---------------------------------------------------------------------------->
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> APIs </h1>
+<!---------------------------------------------------------------------------->
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Media </h1>
+<!---------------------------------------------------------------------------->
+<h2>Images</h2>
+<h2>Video / Youtube</h2>
+<h2>Audio</h2>
+
+<hr>
+
+<!---------------------------------------------------------------------------->
+<h1> Javascript </h1>
+<!---------------------------------------------------------------------------->
+<p id="JSdemo"></p>
+<script>document.getElementById("JSdemo").innerHTML="Hello World"</script>
+<hr>
+
+<!---------------------------------------------------------------------------->
+</body>
+</html>

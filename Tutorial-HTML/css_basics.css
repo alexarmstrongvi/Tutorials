@@ -1,0 +1,10 @@
+/*
+NOTES:
+    - CSS Rule
+        - Syntax: Selector {property:value; property:value}
+        - propert:value called declaration
+        - Example: h1 {color:blue; font-size:12px}
+    - 
+*/
+
+.external, .internal, .inline {color:red}
