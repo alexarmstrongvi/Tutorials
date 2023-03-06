@@ -4,27 +4,22 @@
 # Code
 ################################################################################
 import logging
-import sys
+import log_msg_module
 
 # Configuration
 logger_name = __name__ # recommended to use module name
 log_level = logging.INFO
-log_format = '%(levelname)8s :: (%(module)s) %(message)s'
-log_stream = sys.stderr # default
 
 # Initialize
-formatter = logging.Formatter(log_format)
-
-handler = logging.StreamHandler(stream=log_stream) # default behavior
-handler.setFormatter(formatter)
-
 logger = logging.getLogger(logger_name)
-logger.addHandler(handler)
-logger.setLevel(log_level)
 
 # Log message from other modules
 def main():
-    import log_msg_module
+    logging.basicConfig(
+        level  = logging.CRITICAL,
+        format = "%(levelname)8s || %(module)s :: %(message)s")
+    logger.setLevel(log_level)
+    logging.info("Calling root logger")
     logger.debug("Calling module function")
     log_msg_module.do_something()
     
@@ -36,18 +31,14 @@ if __name__ == "__main__":
 ################################################################################
 # Output
 ################################################################################
-# $ ./05_configuring_new_loggers.py
-#    INFO :: (log_msg_module) Info message 
-#   DEBUG :: (log_msg_module) Debug message
-#    INFO :: (04_making_new_loggers) Done
-
+# $ ./03_making_new_loggers.py
+#    INFO || log_msg_module :: Info message
+#   DEBUG || log_msg_module :: Debug message
+#    INFO || 03_making_new_loggers :: Done
 
 ################################################################################
 # Notes
 ################################################################################
-# formatting output requires creating a Formatter object that gets provided to a
-# Handler.
-# The basic flow of messages at this point is:
-# message -> Logger -> Handler -> Formatter -> Logged
-# For a more detailed flow chart of messages, see
-# https://docs.python.org/2/howto/logging.html#logging-flow
+# The module specific loggers can have their own levels apart from the root
+# level. All messages making it past the log level of their individual logger
+# will get passed up to the root for sending to stdout.
