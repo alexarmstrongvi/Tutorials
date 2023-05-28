@@ -3,7 +3,7 @@ from pathlib import Path
 import time
 from traceback import TracebackException
 import sys
-from typing import Union
+from typing import Union, Optional
 
 ################################################################################
 # Configuration
@@ -64,7 +64,10 @@ def get_logger(name: str = None, level : Union[str, int] = None):
 
 ################################################################################
 # General logging utilities
-def level_name(level: int) -> str:
+def level_name(level: Optional[int]) -> str:
+    if level is None:
+        return '?'
+
     if level >= 50:
         name = 'CRITICAL'
     elif level >= 40:
@@ -79,6 +82,8 @@ def level_name(level: int) -> str:
         name = ''
     elif level == 0:
         name = 'NOTSET'
+    else:
+        name = '?'
     sublevel = level % 10
     if sublevel:
         name += f'+{sublevel}'
@@ -111,7 +116,8 @@ def log_hierarchy_summary_str() -> str:
 def log_summary_str(log):
     log_lvl = log.level
     eff_lvl = log.getEffectiveLevel()
-    min_lvl = min([lvl for lvl  in range(logging.CRITICAL+1) if log.isEnabledFor(lvl)])
+    enabled_lvls = [lvl for lvl  in range(logging.CRITICAL+1) if log.isEnabledFor(lvl)]
+    min_lvl = min(enabled_lvls) if enabled_lvls else None
 
     s  = f'Log Summary - {log.name}'
     s += f'\n - Levels   : Effective = {level_name(eff_lvl)}; Logger = {level_name(log_lvl)}; Enabled for >={level_name(min_lvl)}'

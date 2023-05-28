@@ -14,6 +14,7 @@ import sys
 import os
 import subprocess
 from pathlib import Path
+import yaml
 
 # Import module with its own logger (child of the project logger), to confirm it
 # has the correct formatting and level.
@@ -28,6 +29,7 @@ from class_with_logger import ClassWithLogger
 # Test that configuring and using root logger before importing the project
 # logger does not impact project log messages
 import logging
+import logging.config
 logging.basicConfig(level=logging.DEBUG)
 logging.info('Configured ROOT logger. Project log format and level should be unaffected')
 extpkg_logger = logging.getLogger('ExternalPkg.Child')
@@ -40,12 +42,18 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--log-path', type=Path)
     parser.add_argument('-l', '--log-level', default='WARNING') # log_level
+    parser.add_argument('-c', '--log-conf', type=Path)
     args = parser.parse_args()
     return args
 
 def main():
     args = get_args()
-    logger.basic_config(level=args.log_level, log_path=args.log_path)
+    if args.log_conf:
+        with args.log_conf.open('r') as ifile:
+            dict_config = yaml.safe_load(ifile)
+        logging.config.dictConfig(dict_config)
+    else:
+        logger.basic_config(level=args.log_level, log_path=args.log_path)
 
     logger.log_multiline(log.debug, logger.log_hierarchy_summary_str())
 
