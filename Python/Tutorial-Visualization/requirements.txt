@@ -1,0 +1,10 @@
+ipython
+jupyterlab
+ipywidgets # required for FigureWidget
+
+numpy
+pandas
+matplotlib
+seaborn
+plotly
+bokeh
