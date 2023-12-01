@@ -6,7 +6,8 @@ Example script for logging in a multiprocessing pool context
 import concurrent.futures as cf
 import functools
 import logging
-import logging.handlers
+from logging.handlers import QueueHandler, QueueListener
+import logging.config
 import multiprocessing as mp
 from multiprocessing.process import BaseProcess
 import random
@@ -22,8 +23,43 @@ cfg = {
     "n_tasks": 3,
     "n_processes": 2,
     "logging": {
-        "level": "DEBUG",
-        "format": "%(levelname)8s | [%(processName)s] %(module)s :: %(message)s",
+        "dictConfig" : {
+            "version" : 1,
+            "disable_existing_loggers" : False,
+            "formatters" : {
+                "default" : {
+                    "class" : "logging.Formatter",
+                    "format": "%(levelname)8s | [%(processName)s] %(module)s :: %(message)s",
+                },
+            },
+            "handlers" : {
+                "console" : {
+                    "class"     : "logging.StreamHandler",
+                    "level"     : "WARNING",
+                    "formatter" : "default",
+                },
+                "file" : {
+                    "class"     : "logging.FileHandler",
+                    "level"     : "INFO",
+                    "formatter" : "default",
+                    "filename"  : "run.log",
+                    "mode"      : "w",
+                },
+                # "test" : { # For testing specific files
+                #     "class"     : "logging.FileHandler",
+                #     "level"     : (test_level := "DEBUG"),
+                #     "formatter" : "default",
+                #     "filename"  : "run_test.log",
+                #     "mode"      : "w",
+                # }
+            },
+            "loggers" : {
+                # "__main__" : { # Example of using test logger
+                #     "handlers" : ["test"],
+                #     "level" : test_level,
+                # }
+            }
+        },
     },
 }
 
@@ -47,7 +83,8 @@ def main_pool():
         )
         log_listener.start()
         # Option 2: Logging handled by child process
-        # log.addHandler(logging.handlers.QueueHandler(queue))
+        # log.addHandler(QueueHandler(queue)) import
+        # QueueListener
 
         # Combine/Simplify inputs for multiprocessing
         mp_configure_logging_partial = functools.partial(
@@ -109,30 +146,35 @@ def main_pool():
 
 
 def main_manual():
-    basic_config = cfg["logging"]
     set_process_name(mp.current_process())
     queue = mp.Queue(-1)
 
-    log_listener = threading.Thread(
-        target=start_log_listener, args=(queue, basic_config)
-    )
-    log_listener.start()
+    logging.config.dictConfig(cfg["logging"]['dictConfig'])
+    handler_names = {'console', 'file'} & logging.getHandlerNames() 
+    handlers = [logging.getHandlerByName(x) for x in handler_names]
+    log_level = min(h.level for h in handlers)
+    configure_queue_logging(queue, log_level)
+    log.critical('CRITICAL TEST')
 
-    mp_configure_logging_partial = functools.partial(
-        mp_configure_logging,
+    log_listener = QueueListener(queue, *handlers, respect_handler_level=True)
+    log_listener.start()
+    log.info(f"Log listener configured")
+
+    mp_configure_logging = functools.partial(
+        configure_queue_logging,
         queue=queue,
-        log_level=basic_config["level"],
+        log_level=log_level,
     )
 
     # Create Process instances
     workers = []
     worker = mp.Process(
-        target=_mp_target_pow, args=(mp_configure_logging_partial, 2, 3)
+        target=_mp_target_pow, args=(mp_configure_logging, 2, 3)
     )
     workers.append(worker)
 
     worker = mp.Process(
-        target=_mp_target_pow, args=(mp_configure_logging_partial, 4, 5)
+        target=_mp_target_pow, args=(mp_configure_logging, 4, 5)
     )
     workers.append(worker)
 
@@ -146,10 +188,8 @@ def main_manual():
 
     # Shutdown
     log.debug("Shutting down")
-    queue.put_nowait(None)
-    log_listener.join()
     log.info("Done")
-
+    log_listener.stop()
 
 # Use-case specific wrappers to standardize calls to multiprocessing API
 def _mp_pow(args):
@@ -195,25 +235,12 @@ def set_process_name(process: Optional[BaseProcess] = None):
             r"^(?:SpawnPoolWorker|SpawnProcess|Process)-", "P", process.name
         )
 
-
-def mp_configure_logging(queue, log_level):
-    """Configure logging in child processes"""
+def configure_queue_logging(queue, log_level):
+    queue_handler = QueueHandler(queue)
     root = logging.root
-    root.addHandler(logging.handlers.QueueHandler(queue))
+    root.addHandler(queue_handler)
     root.setLevel(log_level)
-    log.debug("Logging configured")
-
-
-def start_log_listener(queue, basic_config):
-    logging.basicConfig(**basic_config)
-    log.debug(f"Log listener configured")
-
-    while True:
-        if (record := queue.get()) is None:
-            log.info(f"Logger process shutting down.")
-            break
-        logging.getLogger(record.name).handle(record)
-
+    log.info('Logging configured')
 
 ################################################################################
 # Business logic
@@ -226,10 +253,9 @@ def pow(num1, num2):
 
 ################################################################################
 if __name__ == "__main__":
-    print("Demoing process pool")
-    main_pool()
-    print("\n" + "=" * 80)
+    # print("Demoing process pool")
+    # main_pool()
+    # print("\n" + "=" * 80)
 
     print("Demoing manual process handling")
     main_manual()
-    print("\n")
