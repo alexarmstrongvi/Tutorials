@@ -1,13 +1,17 @@
 #!/usr/bin/env python
+
+# Standard library
 from pathlib import Path
 import sqlite3
+from sqlite3 import OperationalError
 from time import perf_counter_ns
 from typing import Iterable
 import logging
+import difflib
 import argparse
 
-log = logging.getLogger('SQL-Doctest')
-
+# Globals
+log = logging.getLogger('doctest')
 
 ################################################################################
 def main():
@@ -18,62 +22,176 @@ def main():
         format = "%(message)s",
         force  = True,
     )
-    assert args.path.is_file()
     with args.path.open('r') as fp:
         lines = fp.readlines()
 
     n_failures = 0
+    n_passed = 0
+    n_skipped = 0
     elapsed = {}
     i = 0
     with sqlite3.connect(':memory:') as conn:
         cur = conn.cursor()
         for i, (sql_script, test_query, answer) in enumerate(iterate_tests(lines)):
+            # DEBUG
+            if any(l and not l.startswith('--') for l in sql_script.split('\n')):
+                log.debug('\n==== SETUP =====')
+                log.debug(f'sql_script:\n{sql_script}')
+            log.debug(f'\n==== TEST {i+1} =====')
+            log.debug(f'sqlite3> {test_query.strip()}')
+            log.debug(repr(answer))
+
+            # Determine test type 
+            test_type = None
+            if isinstance(answer, list):
+                test_type = 'EQUALS'
+            elif isinstance(answer, tuple):
+                test_type = 'RAISES'
+            elif answer is None:
+                test_type = None
+            else:
+                log.error('Unable to determine test type')
+
+            # Run any setup statements
             if sql_script:
                 try:
                     cur.executescript(sql_script)
-                except sqlite3.OperationalError:
+                except OperationalError:
                     log.critical(f'Exception running SQL setup commands:\n{sql_script}')
                     raise
+
+            # Run test query
             try:
                 start = perf_counter_ns()
                 result = cur.execute(test_query).fetchall()
                 elapsed[(i, test_query)] = perf_counter_ns() - start
-            except sqlite3.OperationalError:
-                log.critical(f'Exception running SQL query:\n{test_query}')
-                raise
-            if result != answer: 
+            except sqlite3.OperationalError as e:
+                if test_type == 'RAISES': 
+                    # NOTE: Exceptions cannot be checked for equality so they
+                    # need to have their type and str compared separately
+                    result = (type(e), str(e))
+                else:
+                    log.critical(f'Exception running SQL query:\n{test_query}')
+                    raise
+
+            # Check answer
+            if answer is None:
+                log.debug('Query has no test:\nsqlite3>%s', test_query)
+                log.debug('\n%r',answer)
+                n_skipped += 1
+            elif result != answer: 
                 n_failures += 1
                 log.warning('❌ Test Failed')
                 log.warning(f'sqlite3> {test_query.strip()}')
-                log.warning(repr(result))
-                log.warning(f'\nExpected result:\n{answer!r}\n')
+                if test_type == 'EQUALS':
+                    result_str = [repr(x) for x in result]
+                    expected_str = [repr(x) for x in answer]
+                    diff_gen = difflib.ndiff(expected_str, result_str)
+                    diff = diff_gen
+                    # diff = [l for l in diff_gen if l[0] in {'+','-'}]
+                    log.warning('\n'.join(diff) + '\n')
+                    # log.warning('Expected vs Result\n%s', '\n'.join(diff))
+                else:
+                    log.warning(repr(result))
+                    log.warning(f'\nExpected result:\n{answer!r}\n')
 
-    elapsed = [
+            else:
+                n_passed += 1
+
+    elapsed_list = [
         (k[1], elapsed[k])
         for k in sorted(elapsed, key=elapsed.get, reverse=True)
     ]
     log.info('===== Summary =====')
     log.info('Slowest queries')
     n = 2
-    for query, t in elapsed[:n]:
+    for query, t in elapsed_list[:n]:
         log.info(f'{t/10**3}ms:\n{query}')
-    log.info('Next slowest: ' + ', '.join(f'{t:,d}' for _, t in elapsed[n:n+5]))
+    log.info('Next slowest: ' + ', '.join(f'{t/10**3}ms' for _, t in elapsed_list[n:n+5]))
 
     log.info('===== Result =====')
+    n_tests = n_passed + n_failures
+    if n_skipped > 0:
+        log.info(f'{n_skipped}/{i+1} queries not tested!')
     if n_failures == 0:
-        log.info(f'✅ All {i+1} tests passed!')
+        log.info(f'✅ All {n_tests} tests passed!')
     else:
-        log.info(f'🟨 {i+1-n_failures}/{i+1} tests passed!')
+        log.info(f'🟨 {n_passed}/{n_tests} tests passed!')
 
+def iterate_tests(lines):
+    in_comment   = False
+    in_statement = False
+    i_script     = 0
+    i_query      = None
 
-def iterate_tests(lines: list[str]) -> Iterable[tuple[str, str, str]]:
+    i = -1
+    while (i := i+1) < len(lines):
+        line = lines[i].split('--', maxsplit=1)[0].strip()
 
+        if line == '':
+            continue
+
+        # Skip comments
+        if line.startswith('/*'):
+            in_comment = True
+        if line.endswith('*/'):
+            in_comment = False
+            continue
+        if in_comment:
+            continue
+
+        # Flag start of SQL statement
+        if not in_statement:
+            in_statement = True
+            statement_type = line.split(maxsplit=1)[0].upper()
+            if statement_type in {'SELECT', 'VALUES', 'WITH'}:
+                i_query = i
+
+        # Handle end of SQL statement
+        if line.endswith(';'):
+            in_statement = False
+            if i_query is None:
+                continue
+
+            # Extract script setup and query
+            sql_script = ''.join(lines[i_script:i_query])
+            sql_query  = ''.join(lines[i_query:i+1])
+
+            # Parse answer
+            test_keyword = None
+            for keyword in ['EQUALS', 'RAISES']:
+                if lines[i+1].startswith(f'-- {keyword}'):
+                    test_keyword = keyword
+                    break
+
+            answer = None
+            if test_keyword is not None:
+                i += 1
+
+                answer_lines = [lines[i][len(f'-- {test_keyword}'):].strip()]
+                while i+1 < len(lines) and lines[i+1].startswith('--'):
+                    i += 1
+                    answer_lines.append(lines[i][len('--'):].strip())
+                answer_str = '\n'.join(answer_lines)
+
+                if test_keyword == "EQUALS":
+                    answer_str = answer_str.replace('NULL', 'None')
+                answer = eval(answer_str)
+                    
+            yield sql_script, sql_query, answer
+
+            # Reset trackers
+            i_script = i+1
+            i_query = None
+
+################################################################################
+def iterate_tests_old(lines: list[str]) -> Iterable[tuple[str, str, str]]:
     i = 0
     nth_test = 0
     while i < len(lines):
         # Get SQL setup
         start, i = i, take_until(
-            lambda l, i : l[i].startswith('SELECT') or l[i].startswith('WITH'),
+            lambda l, i : any(l[i].startswith(x) for x in ('SELECT', 'WITH', 'VALUES')),
             lines, i,
         )
         if i is None:
@@ -83,9 +201,10 @@ def iterate_tests(lines: list[str]) -> Iterable[tuple[str, str, str]]:
         # Get test query
         start, i = i, take_until(
             lambda l, i : (
-                l[i].startswith('-- EQUALS')
-                or l[i] == "\n"
-                or (l[i+1].startswith('SELECT') and not l[i].startswith('WITH'))
+                (i > 0 and l[i-1].split('--', maxsplit=1)[0].rstrip().endswith(';'))
+                # or l[i].startswith('-- EQUALS')
+                # or l[i] == "\n"
+                # or (i+1 < len(l) and l[i+1].startswith('SELECT') and not l[i].startswith('WITH'))
             ),
             lines, i,
         )
@@ -140,6 +259,7 @@ def take_until(pred, lines, i=0) -> int | None:
         return None
     return i
 
+################################################################################
 def parse_argv() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
