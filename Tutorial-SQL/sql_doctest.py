@@ -9,6 +9,7 @@ from typing import Iterable
 import logging
 import difflib
 import argparse
+import itertools
 
 # Globals
 log = logging.getLogger('doctest')
@@ -28,11 +29,11 @@ def main():
     n_failures = 0
     n_passed = 0
     n_skipped = 0
-    elapsed = {}
+    query_durations = {}
     i = 0
     with sqlite3.connect(':memory:') as conn:
         cur = conn.cursor()
-        for i, (sql_script, test_query, answer) in enumerate(iterate_tests(lines)):
+        for i, (sql_script, test_query, answer, test_type) in enumerate(iterate_tests(lines)):
             # DEBUG
             if any(l and not l.startswith('--') for l in sql_script.split('\n')):
                 log.debug('\n==== SETUP =====')
@@ -41,16 +42,16 @@ def main():
             log.debug(f'sqlite3> {test_query.strip()}')
             log.debug(repr(answer))
 
-            # Determine test type 
-            test_type = None
-            if isinstance(answer, list):
-                test_type = 'EQUALS'
-            elif isinstance(answer, tuple):
-                test_type = 'RAISES'
-            elif answer is None:
-                test_type = None
-            else:
-                log.error('Unable to determine test type')
+            # # Determine test type
+            # test_type = None
+            # if isinstance(answer, list):
+            #     test_type = 'EQUALS'
+            # elif isinstance(answer, tuple):
+            #     test_type = 'RAISES'
+            # elif answer is None:
+            #     test_type = None
+            # else:
+            #     log.error('Unable to determine test type')
 
             # Run any setup statements
             if sql_script:
@@ -61,12 +62,14 @@ def main():
                     raise
 
             # Run test query
+            elapsed = 0
             try:
                 start = perf_counter_ns()
                 result = cur.execute(test_query).fetchall()
-                elapsed[(i, test_query)] = perf_counter_ns() - start
+                elapsed = perf_counter_ns() - start
+                query_durations[(i, test_query)] = elapsed
             except sqlite3.OperationalError as e:
-                if test_type == 'RAISES': 
+                if test_type == 'RAISES':
                     # NOTE: Exceptions cannot be checked for equality so they
                     # need to have their type and str compared separately
                     result = (type(e), str(e))
@@ -75,11 +78,16 @@ def main():
                     raise
 
             # Check answer
-            if answer is None:
+            if test_type == 'DEBUG':
+                print(f'sqlite3> {test_query.strip()}')
+                headers = tuple(x[0] for x in cur.description)
+                print_tuple_table(result, headers)
+                print(f'{elapsed/10**3}ms')
+                print()
+            elif answer is None:
                 log.debug('Query has no test:\nsqlite3>%s', test_query)
-                log.debug('\n%r',answer)
                 n_skipped += 1
-            elif result != answer: 
+            elif result != answer:
                 n_failures += 1
                 log.warning('❌ Test Failed')
                 log.warning(f'sqlite3> {test_query.strip()}')
@@ -99,8 +107,8 @@ def main():
                 n_passed += 1
 
     elapsed_list = [
-        (k[1], elapsed[k])
-        for k in sorted(elapsed, key=elapsed.get, reverse=True)
+        (k[1], query_durations[k])
+        for k in sorted(query_durations, key=query_durations.get, reverse=True)
     ]
     log.info('===== Summary =====')
     log.info('Slowest queries')
@@ -159,13 +167,13 @@ def iterate_tests(lines):
 
             # Parse answer
             test_keyword = None
-            for keyword in ['EQUALS', 'RAISES']:
+            for keyword in ['EQUALS', 'RAISES', 'DEBUG']:
                 if lines[i+1].startswith(f'-- {keyword}'):
                     test_keyword = keyword
                     break
 
             answer = None
-            if test_keyword is not None:
+            if test_keyword is not None and test_keyword != 'DEBUG':
                 i += 1
 
                 answer_lines = [lines[i][len(f'-- {test_keyword}'):].strip()]
@@ -177,8 +185,8 @@ def iterate_tests(lines):
                 if test_keyword == "EQUALS":
                     answer_str = answer_str.replace('NULL', 'None')
                 answer = eval(answer_str)
-                    
-            yield sql_script, sql_query, answer
+
+            yield sql_script, sql_query, answer, test_keyword
 
             # Reset trackers
             i_script = i+1
@@ -258,6 +266,39 @@ def take_until(pred, lines, i=0) -> int | None:
     if i >= len(lines):
         return None
     return i
+
+def print_tuple_table(tuple_list, headers=None):
+    """
+    Print a list of tuples as a formatted table.
+
+    Args:
+        tuple_list (list): List of tuples to print
+    """
+    if not tuple_list:
+        return
+
+    # Determine column widths if not provided
+    column_widths = [
+        max(len(str(item)) for item in col)
+        for col in zip(*tuple_list)
+    ]
+
+    # Print header separator
+    separator = '+' + '+'.join('-' * (width + 2) for width in column_widths) + '+'
+    print(separator)
+
+    # Print each row
+    it = zip(itertools.repeat(False),tuple_list)
+    if headers is not None:
+        it = itertools.chain([(True,headers)], it)
+    for is_header, row in it:
+        formatted_row = '| ' + ' | '.join(
+            f'{str(item):^{width}}' for item, width in zip(row, column_widths)
+        ) + ' |'
+        print(formatted_row)
+        if is_header:
+            print(separator)
+    print(separator)
 
 ################################################################################
 def parse_argv() -> argparse.Namespace:

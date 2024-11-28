@@ -14,40 +14,47 @@ table-valued (TVF): FUNC(*args)  -> table
 --------------
 -- math: ABS, MIN, MAX, ROUND, SIGN, RANDOM
 --------------
-WITH t(col) AS (VALUES (2), (-2))
-SELECT ABS(col) FROM t;
--- EQUALS [(2,), (2,)]
+SELECT
+    abs(-2.0),
+    ceil(1.1),
+    ceiling(1.1),
+    floor(2.9),
+    trunc(2.9),
+    mod(6, 4);
+-- EQUALS [(2.0, 2.0, 2.0, 2.0, 2.0, 2.0)]
 
--- acos(X)
--- acosh(X)
--- asin(X)
--- asinh(X)
--- atan(X)
--- atan2(Y,X)
--- atanh(X)
--- ceil(X)
--- ceiling(X)
--- cos(X)
--- cosh(X)
--- degrees(X)
+SELECT
+    degrees(pi()),
+    radians(180)/pi(),
+    sin(pi()/2);
+-- EQUALS [(180.0, 1.0, 1.0)]
+
+SELECT
+    sqrt(16),
+    pow(2,3),
+    power(2,3),
+-- EQUALS [(8.0, 8.0, 8.0)],
+
 -- exp(X)
--- floor(X)
 -- ln(X)
--- log(B,X)
 -- log(X)
--- log10(X)
 -- log2(X)
--- mod(X,Y)
--- pi()
--- pow(X,Y)
--- power(X,Y)
--- radians(X)
+-- log10(X)
+-- log(B,X)
+
 -- sin(X)
 -- sinh(X)
--- sqrt(X)
+-- cos(X)
+-- cosh(X)
 -- tan(X)
 -- tanh(X)
--- trunc(X)
+-- asin(X)
+-- asinh(X)
+-- acos(X)
+-- acosh(X)
+-- atan(X)
+-- atanh(X)
+-- atan2(Y,X)
 
 --- }}}
 /*******************************************************************************
@@ -61,16 +68,11 @@ SELECT ABS(col) FROM t;
 
 -- lower(X)
 -- upper(X)
--- trim(X)
 -- trim(X,Y)
--- ltrim(X)
 -- ltrim(X,Y)
--- rtrim(X)
 -- rtrim(X,Y)
 -- replace(X,Y,Z)
--- substr(X,Y)
 -- substr(X,Y,Z)
--- substring(X,Y)
 -- substring(X,Y,Z)
 
 -- concat(X,...)
@@ -88,7 +90,6 @@ SELECT ABS(col) FROM t;
 -- char(X1,X2,...,XN)
 -- hex(X)
 -- soundex(X)
--- unhex(X)
 -- unhex(X,Y)
 -- unicode(X)
 

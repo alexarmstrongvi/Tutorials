@@ -371,7 +371,7 @@ SELECT * FROM left JOIN right USING (val);
 --     (NULL, 55, 'D'),  # none-to-one
 -- ]
 
--- OUTER JOIN has not default so LEFT, RIGHT, or FULL must be specified
+-- OUTER JOIN has no default so LEFT, RIGHT, or FULL must be specified
 SELECT * FROM left OUTER JOIN right USING (val);
 -- RAISES (OperationalError, "unknown join type: OUTER")
 
@@ -406,6 +406,13 @@ SELECT * FROM left NATURAL JOIN right;
 
 -- AS vs USING
 SELECT * FROM left JOIN right ON left.val == right.val;
+-- EQUALS [
+--    (1, 11, 'A', 11),
+--    (2, 22, 'B', 22),
+--    (3, 22, 'B', 22),
+--    (4, 33, 'B', 33),
+--    (4, 33, 'C', 33),
+-- ]
 
 -- Selecting columns
 SELECT left.c_left, right.c_right FROM left JOIN right USING (val);
@@ -426,10 +433,127 @@ EXCEPT
 SELECT * FROM left INNER JOIN right USING (val);
 -- EQUALS []
 
+DROP TABLE left;
+DROP TABLE right;
 -- }}}
 /*******************************************************************************
-* TODO common-table-expression: RECURSIVE, AS, MATERIALIZED {{{
+* common-table-expression: RECURSIVE, AS, MATERIALIZED {{{
 *******************************************************************************/
+CREATE TABLE tbl (val INTEGER);
+INSERT INTO tbl
+VALUES (1), (2), (3), (4), (5), (6);
+
+--------------------
+-- Ordinary
+--------------------
+WITH my_cte AS (SELECT val FROM tbl WHERE val < 3)
+SELECT val FROM my_cte;
+-- EQUALS [(1,), (2,),]
+
+-- Column names can be be renamed
+WITH my_cte AS (SELECT val*2 FROM tbl WHERE val < 3)
+SELECT `val*2` FROM my_cte;
+-- EQUALS [(2,), (4,),]
+WITH my_cte(renamed_col) AS (SELECT val*2 FROM tbl WHERE val < 3)
+SELECT renamed_col FROM my_cte;
+-- EQUALS [(2,), (4,),]
+
+DROP TABLE tbl;
+
+--------------------
+-- Recursive
+--------------------
+WITH RECURSIVE
+    evens(x) AS (
+        SELECT 0 -- initial-select
+        UNION ALL
+        SELECT x+2 FROM evens -- recursive-select
+        LIMIT 5
+    )
+SELECT x FROM evens;
+-- EQUALS [(0,), (2,), (4,), (6,), (8,)]
+
+WITH RECURSIVE
+    cte1(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM cte1 LIMIT 10),
+    cte2(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM cte1, cte2 WHERE (y+1)+x=5)
+SELECT * FROM cte2;
+-- DEBUG
+
+WITH RECURSIVE
+    fibonacci(n0, n1) AS (
+        SELECT 1,1
+        UNION ALL
+        SELECT n1, n0+n1
+        FROM fibonacci
+        LIMIT 10
+    )
+SELECT n0 FROM fibonacci;
+-- EQUALS [(1,), (1,), (2,), (3,), (5,), (8,), (13,), (21,), (34,), (55,)]
+
+
+CREATE TABLE connections(
+    a TEXT,
+    b TEXT
+);
+INSERT INTO connections
+VALUES ('A', 'B'), ('B', 'C'), ('A', 'D'), ('X', 'Y');
+
+WITH RECURSIVE
+    connected_to_A(node) AS (
+        SELECT 'A'
+        UNION ALL
+        SELECT connections.b
+        FROM connected_to_A
+        JOIN connections
+        ON connected_to_A.node == connections.a
+        LIMIT 100
+    )
+SELECT * FROM connected_to_A;
+-- EQUALS [('A',), ('B',), ('D',), ('C',)]
+
+
+WITH RECURSIVE
+    primes(n) AS (
+        SELECT 2
+        UNION ALL
+        SELECT n+1
+        FROM primes
+        WHERE NOT EXISTS (
+            SELECT d FROM primes where mod(n, d) = 0
+        )
+        LIMIT 5
+    )
+SELECT * FROM primes;
+-- RAISES (OperationalError, "multiple recursive references: primes")
+
+
+-- The recursive table must appear exactly once in the FROM clause of each
+-- top-level SELECT statement
+
+-- The initial-select may be a compound select, but it may not include an
+-- ORDER BY, LIMIT, or OFFSET
+
+-- The recursive-select may also be a compound select
+
+-- The recursive-select is allowed to include an ORDER BY, LIMIT, and/or OFFSET
+-- but may not use aggregate functions or window functions
+
+-- WITH RECURSIVE
+--     tmp(val) AS (VALUES (0), (1)),
+--     numbers(depth,x_out,x_in,val) AS (
+--         SELECT 0, 1, NULL, NULL
+--         UNION ALL
+--         SELECT
+--             numbers.depth+1,
+--             concat(numbers.x_out,tmp.val),
+--             numbers.x_out,
+--             tmp.val
+--         FROM numbers, tmp
+--         WHERE numbers.depth < 3
+--         LIMIT 100
+--     )
+-- SELECT * from numbers;
+
 -- }}}
 /*******************************************************************************
 * Modifying (UPDATE, SET, DELETE, DROP) {{{
@@ -476,7 +600,7 @@ DROP TABLE tbl;
 * TODO
 *******************************************************************************/
 -- type casting: CAST
--- functions: arguments, "FILTER ( WHERE expr )", OVER window PARTITION BY
+-- functions: arguments
 -- raising: RAISE ({IGNORE, ROLLBACK, ABORT, FAIL}, error-message)
 -- result-column (AS)
 -- table-or-subquery (AS, INDEXED BY, NOT INDEXED, schema-name)
