@@ -35,7 +35,12 @@ C++ Built-in and Standard Library Tutorial
     * A comprehensive comparison of compilers is on (wikipedia)[`https://en.wikipedia.org/wiki/List_of_compilers#C++_compilers`]
 * Writing source code
     * File extensions: .cc, .cpp, .cxx, .C
-        * Generally doesn't matter unless you are dealing with picky IDEs or compilers
+        * Generally doesn't matter unless you are dealing with picky IDEs or
+          compilers
+
+# Developer tools
+* `clang-format` - auto-formatter
+    * `$ clang-format -i file1.cpp`
 
 # Statement Types
 * Declaration statements
